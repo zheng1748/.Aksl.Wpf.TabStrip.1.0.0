@@ -145,7 +145,6 @@ namespace Aksl.Wpf.Unity
             return Task.CompletedTask;
         }
   
-
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
             _ = moduleCatalog.AddModule(nameof(HomeModule), typeof(HomeModule).AssemblyQualifiedName, InitializationMode.WhenAvailable);
