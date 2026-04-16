@@ -44,7 +44,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <Style x:Key="CloseTabStButtonyle"
+        <Style x:Key="CloseTabButtonStyle"
                TargetType="{x:Type Button}">
             <Setter Property="Command"
                     Value="{Binding Path=ExecuteCloseTabCommand}" />
@@ -86,7 +86,7 @@
 
     <DockPanel>
         <Button DockPanel.Dock="Right"
-                Style="{StaticResource CloseTabStButtonyle}">
+                Style="{StaticResource CloseTabButtonStyle}">
         </Button>
         <TextBlock TextWrapping="Wrap"
                    VerticalAlignment="Center"
