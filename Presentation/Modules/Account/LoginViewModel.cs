@@ -17,8 +17,8 @@ using Prism.Regions;
 using Prism.Unity;
 using Unity;
 
-using Aksl.Toolkit.Services;
 using Aksl.Toolkit.UI;
+using Aksl.Dialogs.Services;
 
 using Aksl.Infrastructure;
 using Aksl.Infrastructure.Events;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,12 +15,9 @@ using System.Windows.Shapes;
 
 namespace Aksl.Dialogs.Views
 {
-    /// <summary>
-    /// ConfirmView.xaml 的交互逻辑
-    /// </summary>
-    public partial class ConfirmView : UserControl
+    public partial class FixedSizeDialogWindowIconButtonView : UserControl
     {
-        public ConfirmView()
+        public FixedSizeDialogWindowIconButtonView()
         {
             InitializeComponent();
         }

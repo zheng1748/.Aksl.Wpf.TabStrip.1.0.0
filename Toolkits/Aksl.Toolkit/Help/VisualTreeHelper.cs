@@ -9,7 +9,48 @@ namespace Aksl.Toolkit.UI
 {
     public class VisualTreeFinder
     {
-        #region Find Child Method
+        #region Find Visual Child Method
+        public T FindVisualChild<T>(DependencyObject currenyObject) where T : DependencyObject
+        {
+            T child = default;
+
+            try
+            {
+                if (HasChild(currenyObject))
+                {
+                    RecursiveVisualChild(currenyObject);
+                }
+
+                void RecursiveVisualChild(DependencyObject parent)
+                {
+                    if (parent is not null && parent is T t)
+                    {
+                        child = t;
+
+                        return;
+                    }
+
+                    if (HasChild(parent))
+                    {
+                        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+                        {
+                            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+
+                            RecursiveVisualChild(child);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            bool HasChild(DependencyObject dep) => dep is not null && VisualTreeHelper.GetChildrenCount(dep) > 0;
+
+            return child;
+        }
+
         public List<T> FindVisualChilds<T>(DependencyObject currenyObject) where T : DependencyObject
         {
             List<T> allChilds = new();
@@ -28,9 +69,9 @@ namespace Aksl.Toolkit.UI
 
                 void RecursiveVisualChild(DependencyObject parent)
                 {
-                    if (!allChilds.Contains(parent) && parent is not null && parent is T tt)
+                    if (!allChilds.Contains(parent) && parent is not null && parent is T t)
                     {
-                        allChilds.Add(tt);
+                        allChilds.Add(t);
                     }
 
                     if (HasChild(parent))
@@ -53,49 +94,87 @@ namespace Aksl.Toolkit.UI
 
             return allChilds;
         }
+        #endregion
 
-        private void RecursiveVisualChildCore<T>(DependencyObject currenyObject, List<T> childs) where T : DependencyObject
+        #region Find Logical Child Method
+        public T FindLogicalChild<T>(DependencyObject currenyObject) where T : DependencyObject
         {
-            if (!childs.Contains(currenyObject) && currenyObject is not null && currenyObject is T t)
-            {
-                childs.Add(t);
-            }
+            T child = default;
 
-            if (HasChild(currenyObject))
+            try
             {
                 RecursiveVisualChild(currenyObject);
-            }
 
-            void RecursiveVisualChild(DependencyObject parent)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+                void RecursiveVisualChild(DependencyObject parent)
                 {
-                    var child = VisualTreeHelper.GetChild(parent, i);
+                    if (parent is not null && parent is T t)
+                    {
+                        child = t;
 
-                    //if (!childs.Contains(child) && child is not null && child is T t)
-                    //{
-                    //    childs.Add(t);
-                    //}
+                        return;
+                    }
 
-                    //RecursiveVisualChild(child);
-                    RecursiveVisualChildCore(child, childs);
+                    foreach (var child in LogicalTreeHelper.GetChildren(parent))
+                    {
+                        if (child is DependencyObject dep)
+                        {
+                            RecursiveVisualChild(dep);
+                        }
+                    }
+
                 }
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
-            bool HasChild(DependencyObject dep) => VisualTreeHelper.GetChildrenCount(dep) > 0;
+            return child;
+        }
+
+        public List<T> FindLogicalChilds<T>(DependencyObject currenyObject) where T : DependencyObject
+        {
+            List<T> allChilds = new();
+
+            try
+            {
+                foreach (DependencyObject child in LogicalTreeHelper.GetChildren(currenyObject))
+                {
+                    if (child is DependencyObject dep)
+                    {
+                        RecursiveVisualChild(child);
+                    }
+                }
+
+                void RecursiveVisualChild(DependencyObject parent)
+                {
+                    if (!allChilds.Contains(parent) && parent is not null && parent is T tt)
+                    {
+                        allChilds.Add(tt);
+                    }
+
+                    foreach (var child in LogicalTreeHelper.GetChildren(parent))
+                    {
+                        if (child is DependencyObject dep)
+                        {
+                            RecursiveVisualChild(dep);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return allChilds;
         }
         #endregion
 
-        #region Find All Parent Method
+        #region Find Visual Parent Method
         public T FindVisualParent<T>(DependencyObject currenyObject) where T : FrameworkElement
         {
             T ancestorer = default;
-
-            //DependencyObject parent = VisualTreeHelper.GetParent(currenyObject);
-            //if (parent is not null && parent is T t)
-            //{
-            //    return t;
-            //}
 
             if (HasParent(currenyObject))
             {
@@ -118,15 +197,6 @@ namespace Aksl.Toolkit.UI
                 }
             }
 
-            //while (parent is not  null)
-            //{
-            //    if (parent is T t)
-            //    {
-            //        return t;
-            //    }
-            //    parent = VisualTreeHelper.GetParent(parent);
-            //}
-
             bool HasParent(DependencyObject dep) => dep is not null && VisualTreeHelper.GetParent(dep) is not null;
 
             return ancestorer;
@@ -138,12 +208,6 @@ namespace Aksl.Toolkit.UI
 
             try
             {
-                //DependencyObject parent = VisualTreeHelper.GetParent(currenyObject);
-                //if (parent is not null && parent is T t)
-                //{
-                //    allParents.Add(t);
-                //}
-
                 if (HasParent(currenyObject))
                 {
                     RecursiveVisualParent(currenyObject);
@@ -172,21 +236,72 @@ namespace Aksl.Toolkit.UI
 
             return allParents;
         }
+        #endregion
 
-        private void RecursiveVisualParentCore<T>(DependencyObject currenyObject, List<T> parents) where T : DependencyObject
+        #region Find Logical Parent Method
+        public T FindLogicalParent<T>(DependencyObject currenyObject) where T : DependencyObject
         {
-            DependencyObject parent = VisualTreeHelper.GetParent(currenyObject);
-            if (!parents.Contains(parent) && parent is not null && parent is T t)
+            T ancestorer = default;
+
+            if (HasParent(currenyObject))
             {
-                parents.Add(t); ;
+                RecursiveVisualParent(currenyObject);
             }
 
-            if (HasParent(parent))
+            void RecursiveVisualParent(DependencyObject child)
             {
-                RecursiveVisualParentCore<T>(parent, parents);
+                DependencyObject parent = LogicalTreeHelper.GetParent(child);
+                if (parent is not null && parent is T t)
+                {
+                    ancestorer = t;
+
+                    return;
+                }
+
+                if (HasParent(parent))
+                {
+                    RecursiveVisualParent(parent);
+                }
             }
 
-            bool HasParent(DependencyObject dep) => dep is not null && VisualTreeHelper.GetParent(dep) is not null;
+            bool HasParent(DependencyObject dep) => dep is not null && LogicalTreeHelper.GetParent(dep) is not null;
+
+            return ancestorer;
+        }
+
+        public List<T> FindLogicalParents<T>(DependencyObject currenyObject) where T : DependencyObject
+        {
+            List<T> allParents = new();
+
+            try
+            {
+                if (HasParent(currenyObject))
+                {
+                    RecursiveVisualParent(currenyObject);
+                }
+
+                void RecursiveVisualParent(DependencyObject child)
+                {
+                    DependencyObject parent = LogicalTreeHelper.GetParent(child);
+                    if (!allParents.Contains(parent) && parent is not null && parent is T t)
+                    {
+                        allParents.Add(t);
+                    }
+
+                    if (HasParent(parent))
+                    {
+                        RecursiveVisualParent(parent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            bool HasParent(DependencyObject dep) => dep is not null && LogicalTreeHelper.GetParent(dep) is not null;
+
+            return allParents;
         }
         #endregion
     }

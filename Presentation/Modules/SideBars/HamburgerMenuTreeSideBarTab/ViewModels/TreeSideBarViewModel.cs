@@ -13,8 +13,9 @@ using Prism.Regions;
 using Prism.Unity;
 using Unity;
 
+using Aksl.Dialogs.Services;
+
 using Aksl.Infrastructure;
-using Aksl.Toolkit.Services;
 
 namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
 {
