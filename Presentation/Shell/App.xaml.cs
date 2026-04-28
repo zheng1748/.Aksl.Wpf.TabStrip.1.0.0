@@ -29,6 +29,7 @@ using Aksl.Modules.Shell.Views;
 
 using Aksl.Modules.HamburgerMenuSideBarTab;
 using Aksl.Modules.HamburgerMenuNavigationSideBarTab;
+using Aksl.Modules.HamburgerMenuTreeSideBarTab;
 
 using Aksl.Modules.Account;
 
@@ -36,7 +37,6 @@ using Aksl.Modules.Pipeline;
 using Aksl.Modules.Thermometer;
 using Aksl.Modules.CoolingTower;
 using Aksl.Modules.AirCompresser;
-using Aksl.Modules.HamburgerMenuTreeSideBarTab;
 using Aksl.Modules.Others;
 
 namespace Aksl.Wpf.Unity

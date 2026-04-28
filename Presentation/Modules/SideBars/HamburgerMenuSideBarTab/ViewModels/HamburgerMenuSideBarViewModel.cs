@@ -197,7 +197,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
                 var isAddOnNotLeaf = !IsLeaf(currentMenuItem) && !IsNexOnNotLeaf(currentMenuItem);
                 if (!AnyEqualsMenuItems(travelMenuItems, currentMenuItem) && HasTitle(currentMenuItem) && (isAddOnLeaf || isAddOnNotLeaf))
                 {
-                    leafHamburgerMenuSideBarItemViewModels.Add(new(_eventAggregator, currentMenuItem));
+                    leafHamburgerMenuSideBarItemViewModels.Add(new(currentMenuItem,null));
                     travelMenuItems.Add(currentMenuItem);
                 }
 
