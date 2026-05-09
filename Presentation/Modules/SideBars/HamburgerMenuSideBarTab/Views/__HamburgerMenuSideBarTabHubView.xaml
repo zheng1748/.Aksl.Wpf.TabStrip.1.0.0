@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Aksl.Modules.HamburgerMenuSideBarTab.Views.IndustryHamburgerMenuSideBarTabHubView"
+﻿<UserControl x:Class="Aksl.Modules.HamburgerMenuSideBarTab.Views.HamburgerMenuSideBarTabHubView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,6 +6,7 @@
              xmlns:ei="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:views="clr-namespace:Aksl.Modules.HamburgerMenuSideBarTab.Views"
+             xmlns:tabviews="clr-namespace:Aksl.Tabs.Views"
              xmlns:a="clr-namespace:Aksl.Modules.HamburgerMenuSideBarTab"
              xmlns:sv="clr-namespace:Aksl.Modules.HamburgerMenuSideBarTab"
              mc:Ignorable="d"
@@ -560,7 +561,7 @@
                         <SolidColorBrush Color="Transparent" />
                     </Grid.Background>
                     <Border>
-                        <views:TabView DataContext="{Binding Path=TabViewModel}" />
+                        <tabviews:TabView DataContext="{Binding Path=TabViewModel}" />
                     </Border>
                     <Rectangle x:Name="LightDismissLayer"
                                Fill="Transparent"
@@ -584,13 +585,13 @@
                                         RenderTransformOrigin="0.5,0.5">
                             <views:HamburgerMenuSideBarView DataContext="{Binding Path=HamburgerMenuSideBar}" />
                             <ContentControl.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform />
-                                    <SkewTransform />
-                                    <RotateTransform />
-                                    <TranslateTransform />
-                                </TransformGroup>
-                            </ContentControl.RenderTransform>
+                              <TransformGroup>
+                                  <ScaleTransform />
+                                  <SkewTransform />
+                                  <RotateTransform />
+                                  <TranslateTransform />
+                              </TransformGroup>
+                          </ContentControl.RenderTransform>
                         </ContentControl>
                         <Rectangle x:Name="HCPaneBorder"
                                    HorizontalAlignment="Right"

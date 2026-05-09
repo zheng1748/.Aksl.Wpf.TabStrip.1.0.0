@@ -11,11 +11,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Aksl.Tabs.Views
+namespace Aksl.Modules.HamburgerMenuSideBarTab.Views
 {
-    public partial class TabView : UserControl
+    public partial class HamburgerMenuSideBarItemView : UserControl
     {
-        public TabView()
+        public HamburgerMenuSideBarItemView()
         {
             InitializeComponent();
         }

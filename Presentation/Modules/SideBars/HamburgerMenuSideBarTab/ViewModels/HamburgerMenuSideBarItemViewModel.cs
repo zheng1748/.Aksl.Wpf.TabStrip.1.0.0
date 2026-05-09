@@ -10,6 +10,7 @@ using Prism.Unity;
 using Unity;
 
 using Aksl.Toolkit.Controls;
+
 using Aksl.Infrastructure;
 using Aksl.Infrastructure.Events;
 
@@ -19,7 +20,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
     {
         #region Members
         protected readonly IEventAggregator _eventAggregator;
-        protected readonly HamburgerMenuSideBarItemViewModel _parent; 
+        protected readonly HamburgerMenuSideBarItemViewModel _parent;
         protected ObservableCollection<HamburgerMenuSideBarItemViewModel> _children;
         private readonly MenuItem _menuItem;
         #endregion
@@ -45,22 +46,22 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
             _children = new();
         }
 
-        public HamburgerMenuSideBarItemViewModel(IEventAggregator eventAggregator, MenuItem menuItem) : this(eventAggregator, menuItem, null)
-        {
-            RaisePropertyChanged(nameof(IsLeaf));
-        }
+        //public HamburgerMenuSideBarItemViewModel(IEventAggregator eventAggregator, MenuItem menuItem) : this(eventAggregator, menuItem, null)
+        //{
+        //    RaisePropertyChanged(nameof(IsLeaf));
+        //}
 
-        public HamburgerMenuSideBarItemViewModel(IEventAggregator eventAggregator, MenuItem menuItem, HamburgerMenuSideBarItemViewModel parent)
-        {
-            _eventAggregator = eventAggregator;
-            _menuItem = menuItem;
-            _parent = parent;
+        //public HamburgerMenuSideBarItemViewModel(IEventAggregator eventAggregator, MenuItem menuItem, HamburgerMenuSideBarItemViewModel parent)
+        //{
+        //    _eventAggregator = eventAggregator;
+        //    _menuItem = menuItem;
+        //    _parent = parent;
 
-            _children = new((from child in _menuItem.SubMenus
-                             select new HamburgerMenuSideBarItemViewModel(eventAggregator, child, this)).ToList<HamburgerMenuSideBarItemViewModel>());
+        //    _children = new((from child in _menuItem.SubMenus
+        //                     select new HamburgerMenuSideBarItemViewModel(eventAggregator, child, this)).ToList<HamburgerMenuSideBarItemViewModel>());
 
-            RaisePropertyChanged(nameof(IsLeaf));
-        }
+        //    RaisePropertyChanged(nameof(IsLeaf));
+        //}
         #endregion
 
         #region Properties

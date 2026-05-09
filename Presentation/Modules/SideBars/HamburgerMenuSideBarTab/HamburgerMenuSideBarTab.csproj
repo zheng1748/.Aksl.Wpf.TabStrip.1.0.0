@@ -11,6 +11,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="ViewModels\__HamburgerMenuSideBarTabHubViewModel.cs" />
+	  <Compile Remove="ViewModels\__HamburgerMenuSideBarViewModel.cs" />
+	  <Compile Remove="Views\__HamburgerMenuSideBarItemView.xaml.cs" />
+	  <Compile Remove="Views\__HamburgerMenuSideBarTabHubView.xaml.cs" />
+	  <Compile Remove="Views\__HamburgerMenuSideBarView.xaml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Remove="Views\__HamburgerMenuSideBarItemView.xaml" />
+	  <Page Remove="Views\__HamburgerMenuSideBarTabHubView.xaml" />
+	  <Page Remove="Views\__HamburgerMenuSideBarView.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="12.0.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
 		<PackageReference Include="Unity" Version="5.11.10" />

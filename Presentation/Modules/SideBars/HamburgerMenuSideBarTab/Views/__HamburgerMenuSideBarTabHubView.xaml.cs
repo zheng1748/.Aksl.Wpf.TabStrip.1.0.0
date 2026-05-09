@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace Aksl.Modules.HamburgerMenuSideBarTab.Views
 {
-    public partial class IndustryHamburgerMenuSideBarTabHubView : UserControl
+    public partial class HamburgerMenuSideBarTabHubView : UserControl
     {
-        public IndustryHamburgerMenuSideBarTabHubView()
+        public HamburgerMenuSideBarTabHubView()
         {
             InitializeComponent();
         }
