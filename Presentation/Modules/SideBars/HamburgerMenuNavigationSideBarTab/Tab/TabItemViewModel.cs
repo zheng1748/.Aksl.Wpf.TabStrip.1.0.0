@@ -12,7 +12,7 @@ using Unity;
 
 using Aksl.Toolkit.Controls;
 
-namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
+namespace Aksl.Tabs.ViewModels
 {
     public class TabItemViewModel : BindableBase
     {
@@ -99,7 +99,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                 {
                     if (_isSelected)
                     {
-                        _eventAggregator.GetEvent<OnActiveTabItemEvent>().Publish(new() { SelectedTabItem = _tabInformation });
+                        _eventAggregator.GetEvent<OnActiveTabItemEvent>().Publish(new() {  SelectedTabInfo = _tabInformation });
                     }
                 }
             }

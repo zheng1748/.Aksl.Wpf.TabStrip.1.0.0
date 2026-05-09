@@ -2,7 +2,7 @@
 
 using Prism.Events;
 
-namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab
+namespace Aksl.Tabs
 {
     public class OnActiveTabItemEvent : PubSubEvent<OnActiveTabItemEvent>
     {
@@ -13,7 +13,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab
         #endregion
 
         #region Properties
-        public TabInformation SelectedTabItem { get; set; }
+        public TabInformation SelectedTabInfo { get; set; }
         #endregion
     }
 }

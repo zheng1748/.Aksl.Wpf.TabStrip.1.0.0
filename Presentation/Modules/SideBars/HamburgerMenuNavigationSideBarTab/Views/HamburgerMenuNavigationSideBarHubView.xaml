@@ -7,6 +7,7 @@
              xmlns:ei="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:views="clr-namespace:Aksl.Modules.HamburgerMenuNavigationSideBarTab.Views"
+             xmlns:tabViews="clr-namespace:Aksl.Tabs.Views"
              xmlns:a="clr-namespace:Aksl.Modules.HamburgerMenuNavigationSideBarTab"
              xmlns:sv="clr-namespace:Aksl.Modules.HamburgerMenuNavigationSideBarTab"
              x:Name="HamburgerMenuNavigationSideBarContainer"
@@ -542,7 +543,7 @@
                 <Grid x:Name="ContentRoot"
                       Grid.ColumnSpan="2">
                     <Border>
-                        <views:TabView DataContext="{Binding Path=TabViewModel}" />
+                        <tabViews:TabView DataContext="{Binding Path=TabViewModel}" />
                     </Border>
                     <Rectangle x:Name="LightDismissLayer"
                                Fill="Transparent"

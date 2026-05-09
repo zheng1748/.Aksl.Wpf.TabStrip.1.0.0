@@ -11,11 +11,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Aksl.Tabs.Views
+namespace Aksl.Modules.RadarMap.Views
 {
-    public partial class TabView : UserControl
+    public partial class RadarItemView : UserControl
     {
-        public TabView()
+        public RadarItemView()
         {
             InitializeComponent();
         }

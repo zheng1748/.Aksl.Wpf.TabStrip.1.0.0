@@ -15,6 +15,7 @@ using Unity;
 using Aksl.Dialogs.Services;
 
 using Aksl.Infrastructure;
+using Aksl.Tabs;
 
 namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 {
@@ -187,7 +188,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         {
             _eventAggregator.GetEvent<OnActiveTabItemEvent>().Subscribe(async (oatie) =>
             {
-                var currentTabItem = oatie.SelectedTabItem;
+                var currentTabInfo = oatie.SelectedTabInfo;
 
                 try
                 {
@@ -199,7 +200,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                         var groupedMenu = (from gm in GroupedMenus
                                            let mc = gm.MenuContent
                                            from mi in mc.MenuItems
-                                           where mi.Name.Equals(currentTabItem.Name, StringComparison.InvariantCultureIgnoreCase) || mi.Title.Equals(currentTabItem.Title, StringComparison.InvariantCultureIgnoreCase)
+                                           where mi.Name.Equals(currentTabInfo.Name, StringComparison.InvariantCultureIgnoreCase) || mi.Title.Equals(currentTabInfo.Title, StringComparison.InvariantCultureIgnoreCase)
                                            select new { MenuContent = mc, MenuItemItemViewModel = mi }).FirstOrDefault();
 
                         var selectedGroupedMenu = (from gm in GroupedMenus

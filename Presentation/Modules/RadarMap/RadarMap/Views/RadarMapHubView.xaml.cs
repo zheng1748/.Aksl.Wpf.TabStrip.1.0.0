@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,11 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Aksl.Tabs.Views
+namespace Aksl.Modules.RadarMap.Views
 {
-    public partial class TabView : UserControl
+    public partial class RadarMapHubView : UserControl
     {
-        public TabView()
+        public RadarMapHubView()
         {
             InitializeComponent();
         }
