@@ -111,7 +111,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
                         SelectedHamburgerMenuSideBarItem.IsSelected = false;
                     }
 
-                    SelectedHamburgerMenuSideBarItem = null;
+                    //SelectedHamburgerMenuSideBarItem = null;
                 }
                 catch (Exception ex)
                 {

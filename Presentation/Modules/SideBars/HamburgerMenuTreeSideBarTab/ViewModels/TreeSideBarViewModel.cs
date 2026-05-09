@@ -16,6 +16,7 @@ using Unity;
 using Aksl.Dialogs.Services;
 
 using Aksl.Infrastructure;
+using Aksl.Tabs;
 
 namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
 {
@@ -45,8 +46,8 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
         public ObservableCollection<TreeSideBarItemViewModel> AllTreeSideBarItems { get; }
         public string WorkspaceViewEventName { get; set; }
 
-        internal TreeSideBarItemViewModel _previewSelectedTreeSideBarItem;
-        internal TreeSideBarItemViewModel PreviewSelectedTreeSideBarItem => _previewSelectedTreeSideBarItem;
+        //internal TreeSideBarItemViewModel _previewSelectedTreeSideBarItem;
+        //internal TreeSideBarItemViewModel PreviewSelectedTreeSideBarItem => _previewSelectedTreeSideBarItem;
 
         private TreeSideBarItemViewModel _selectedTreeSideBarItem;
         public TreeSideBarItemViewModel SelectedTreeSideBarItem
@@ -54,13 +55,14 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
             get => _selectedTreeSideBarItem;
             set
             {
-                if (SetProperty(ref _selectedTreeSideBarItem, value))
-                {
-                    if (_selectedTreeSideBarItem is not null)
-                    {
-                         _selectedTreeSideBarItem.IsSelected = true;
-                    }
-                }
+                SetProperty(ref _selectedTreeSideBarItem, value);
+                //if (SetProperty(ref _selectedTreeSideBarItem, value))
+                //{
+                //    if (_selectedTreeSideBarItem is not null)
+                //    {
+                //         _selectedTreeSideBarItem.IsSelected = true;
+                //    }
+                //}
             }
         }
 
@@ -178,7 +180,7 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
         {
             _eventAggregator.GetEvent<OnActiveTabItemEvent>().Subscribe(async (oatie) =>
             {
-                var currentTabItem = oatie.SelectedTabItem;
+                var currentTabInfo = oatie.SelectedTabInfo;
 
                 try
                 {
@@ -187,23 +189,46 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
                     #region Set Selected TreeSideBarItem Method
                     void SetSelectedTreeSideBarItem()
                     {
-                        var treeSideBarItem = FindtTreeSideBarItemViewModel(currentTabItem);
+                        #region Method
+                        //var treeSideBarItem = FindtTreeSideBarItemViewModel(currentTabInfo);
+
+                        //var selectedTreeSideBarItem = GetSelectedTreeSideBarItemViewModel();
+                        //Debug.Assert(selectedTreeSideBarItem == _selectedTreeSideBarItem);
+
+                        //if (treeSideBarItem is not null)
+                        //{
+                        //    if (treeSideBarItem != selectedTreeSideBarItem)
+                        //    {
+                        //        treeSideBarItem.IsSelected = true;
+                        //        treeSideBarItem.IsExpanded = true;
+
+                        //        if (selectedTreeSideBarItem is not null)
+                        //        {
+                        //            selectedTreeSideBarItem.IsSelected = false;
+                        //        }
+                        //    }
+                        //}
+                        #endregion
+
+                        var matchTreeSideBarItem = FindtTreeSideBarItemViewModel(currentTabInfo);
 
                         var selectedTreeSideBarItem = GetSelectedTreeSideBarItemViewModel();
-                        Debug.Assert(selectedTreeSideBarItem == _selectedTreeSideBarItem);
+                        Debug.Assert(selectedTreeSideBarItem == SelectedTreeSideBarItem);
 
-                        if (treeSideBarItem is not null)
+                        if (matchTreeSideBarItem is not null)
                         {
-                            if (treeSideBarItem != selectedTreeSideBarItem)
+                            if (matchTreeSideBarItem == selectedTreeSideBarItem)
                             {
-                                treeSideBarItem.IsSelected = true;
-                                treeSideBarItem.IsExpanded = true;
-
-                                if (selectedTreeSideBarItem is not null)
-                                {
-                                    selectedTreeSideBarItem.IsSelected = false;
-                                }
+                                return;
                             }
+
+                            if (selectedTreeSideBarItem is not null)
+                            {
+                                selectedTreeSideBarItem.IsSelected = false;
+                            }
+
+                            matchTreeSideBarItem.IsSelected = true;
+                            matchTreeSideBarItem.IsExpanded = true;
                         }
                     }
                     #endregion
@@ -223,7 +248,7 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
             {
                 SelectedTreeSideBarItem.IsSelected = false;
                 SelectedTreeSideBarItem = null;
-                _previewSelectedTreeSideBarItem = null;
+                //_previewSelectedTreeSideBarItem = null;
             }
         }
 
@@ -236,7 +261,7 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
                     _selectedTreeSideBarItem.IsSelected = false;
                 }
 
-                _previewSelectedTreeSideBarItem = null;
+              //  _previewSelectedTreeSideBarItem = null;
                 _selectedTreeSideBarItem = selectedTreeSideBarItem;
                 _selectedTreeSideBarItem.IsSelected = true;
             }
@@ -294,14 +319,27 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
                     {
                         if (e.PropertyName == nameof(TreeSideBarItemViewModel.IsSelected))
                         {
-                            if (tsbivm.IsSelected)
+                            if (SelectedTreeSideBarItem is null &&
+                                       (tsbivm is not null && tsbivm.IsSelected && tsbivm != SelectedTreeSideBarItem))
                             {
-                                _selectedTreeSideBarItem = tsbivm;
+                                SelectedTreeSideBarItem = tsbivm;
                             }
-                            else
+
+                            if (SelectedTreeSideBarItem is not null &&
+                                      (tsbivm is not null && tsbivm.IsSelected && tsbivm != SelectedTreeSideBarItem))
                             {
-                                _previewSelectedTreeSideBarItem = tsbivm;
+                                SelectedTreeSideBarItem.IsSelected = false;
+
+                                SelectedTreeSideBarItem = tsbivm;
                             }
+                            //if (tsbivm.IsSelected)
+                            //{
+                            //    _selectedTreeSideBarItem = tsbivm;
+                            //}
+                            //else
+                            //{
+                            //    _previewSelectedTreeSideBarItem = tsbivm;
+                            //}
                         }
                     }
                 };
