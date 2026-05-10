@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
 using Prism.Events;
-using Prism.Mvvm;
 
 using Aksl.Infrastructure;
 
 namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 {
-    public class GroupedMenuViewModel : BindableBase
+    public class GroupedMenuViewModel : GroupedMenuViewModelBase
     {
         #region Members
         private readonly IEventAggregator _eventAggregator;
@@ -16,14 +15,12 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         #endregion
 
         #region Constructors
-        public GroupedMenuViewModel(IEventAggregator eventAggregator, int groupIndex, MenuItem headerMenuItem, IEnumerable<MenuItem> leafMenuItems)
+        public GroupedMenuViewModel(IEventAggregator eventAggregator, int groupIndex, MenuItem headerMenuItem, IEnumerable<MenuItem> leafMenuItems) : base()
         {
             _eventAggregator = eventAggregator;
             GroupIndex = groupIndex;
             _leafMenuItems = leafMenuItems;
             _headerMenuItem = headerMenuItem;
-
-            CreateMenuContentViewModels();
         }
         #endregion
 
@@ -41,10 +38,11 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             get => _selectedMenuItem;
             set
             {
-                if (SetProperty(ref _selectedMenuItem, value))
-                {
-                    MenuContent.SelectedMenuItem = value;
-                }
+                SetProperty(ref _selectedMenuItem, value);
+                //if (SetProperty(ref _selectedMenuItem, value))
+                //{
+                //    MenuContent.SelectedMenuItem = value;
+                //}
             }
         }
 
@@ -83,15 +81,16 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                 {
                     if (sender is MenuContentViewModel mcvm)
                     {
-                        if (e.PropertyName == nameof(MenuContentViewModel.IsLoading) && !mcvm.IsLoading)
-                        {
-                            IsLoading = false;
-                        }
+                        //if (e.PropertyName == nameof(MenuContentViewModel.IsLoading) && !mcvm.IsLoading)
+                        //{
+                        //    IsLoading = false;
+                        //}
 
                         if (e.PropertyName == nameof(MenuContentViewModel.SelectedMenuItem))
                         {
-                            _selectedMenuItem = mcvm.SelectedMenuItem;
-                            RaisePropertyChanged(nameof(MenuContent));
+                            //_selectedMenuItem = mcvm.SelectedMenuItem;
+                            SelectedMenuItem = mcvm.SelectedMenuItem;
+                            //  RaisePropertyChanged(nameof(MenuContent));
                         }
                     }
                 };

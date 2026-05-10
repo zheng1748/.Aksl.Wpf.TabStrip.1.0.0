@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +17,6 @@ using Aksl.Dialogs.Services;
 
 using Aksl.Infrastructure;
 using Aksl.Tabs;
-using System.Diagnostics;
 
 namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
 {

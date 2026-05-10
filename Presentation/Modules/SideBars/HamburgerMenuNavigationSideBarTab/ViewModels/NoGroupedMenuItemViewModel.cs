@@ -1,26 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using System.Threading.Tasks;
 
+using Prism;
 using Prism.Events;
+using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Services.Dialogs;
+using Prism.Unity;
+using Unity;
+
+using Aksl.Dialogs.Services;
+using Aksl.Toolkit.Controls;
+using Aksl.Toolkit.UI;
 
 using Aksl.Infrastructure;
 using Aksl.Infrastructure.Events;
-using Aksl.Toolkit.Controls;
 
 namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 {
-    public class MenuItemViewModel : BindableBase
+    public class NoGroupedMenuItemViewModel :   BindableBase
     {
         #region Members
-        protected readonly IEventAggregator _eventAggregator;
+        protected readonly IEventAggregator _eventAggregator; 
+        private readonly IDialogViewService _dialogViewService;
         private readonly MenuItem _menuItem;
         #endregion
 
         #region Constructors
-        public MenuItemViewModel(IEventAggregator eventAggregator, int groupIndex, int index, MenuItem menuItem)
+        public NoGroupedMenuItemViewModel(int index, MenuItem menuItem)
         {
-            _eventAggregator = eventAggregator;
-            GroupIndex = groupIndex;
+            _eventAggregator = (PrismApplication.Current as PrismApplicationBase).Container.Resolve<IEventAggregator>();
+            _dialogViewService = (PrismApplication.Current as PrismApplicationBase).Container.Resolve<IDialogViewService>();
+
             Index = index;
             _menuItem = menuItem;
         }
@@ -28,7 +43,6 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 
         #region Properties
         public MenuItem MenuItem => _menuItem;
-        public int GroupIndex { get; }
         public int Index { get; }
         public string WorkspaceViewEventName { get; set; }
         public string Name => _menuItem.Name;
@@ -88,6 +102,56 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         {
             get => _isEnabled;
             set => SetProperty<bool>(ref _isEnabled, value);
+        }
+        #endregion
+
+        #region Loaded Event
+        public void ExecuteLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.UserControl uc)
+            {
+                try
+                {
+                    VisualTreeFinder visualTreeFinder = new();
+                    var grid = visualTreeFinder.FindVisualChild<System.Windows.Controls.Grid>(uc);
+
+                    grid.PreviewMouseLeftButtonDown+= (sender, e) =>
+                    {
+                        IsSelected = true;
+                    };
+
+                }
+                catch (Exception ex)
+                {
+                    _dialogViewService.AlertAsync(message: $"Loaded Error: \"{ex.Message}\"", title: "Error").Await();
+                }
+            }
+        }
+        #endregion
+
+        #region MouseLeftButtonDown Event
+        public void ExecuteMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Grid grid)
+            {
+                VisualTreeFinder visualTreeFinder = new();
+                
+                IsSelected = true;
+
+                e.Handled = true;
+            }
+        }
+        #endregion
+
+        #region MouseMove Event
+        public void ExecuteMouseMove(object sender, MouseEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Grid grid)
+            {
+               // grid.Background=new SolidColorBrush( System.Windows.Media.Colors.Blue);
+
+                e.Handled = true;
+            }
         }
         #endregion
     }

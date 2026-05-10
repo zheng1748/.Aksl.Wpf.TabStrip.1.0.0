@@ -15,7 +15,6 @@ using Unity;
 using Aksl.Dialogs.Services;
 
 using Aksl.Infrastructure;
-using Aksl.Tabs;
 
 namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 {
@@ -37,6 +36,8 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             _menuService = menuService;
 
             GroupedMenus = new();
+            NoGroupedMenus = new();
+            AllMenus = new();
 
             RegisterActiveTabItemEvent();
             RegisterOnSelectedTabItemEmptyEvent();
@@ -45,10 +46,12 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 
         #region Properties
         public ObservableCollection<GroupedMenuViewModel> GroupedMenus { get; }
+        public ObservableCollection<NoGroupedMenuViewModel> NoGroupedMenus { get; }
+        public ObservableCollection<GroupedMenuViewModelBase> AllMenus { get; }
         public string WorkspaceViewEventName { get; set; }
 
-        internal MenuItemViewModel _previewSelectedMenuItem;
-        internal MenuItemViewModel PreviewSelectedMenuItem => _previewSelectedMenuItem;
+        //internal MenuItemViewModel _previewSelectedMenuItem;
+        //internal MenuItemViewModel PreviewSelectedMenuItem => _previewSelectedMenuItem;
 
         private MenuItemViewModel _selectedMenuItemItem;
         public MenuItemViewModel SelectedMenuItem
@@ -58,12 +61,36 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             {
                 if (SetProperty(ref _selectedMenuItemItem, value))
                 {
-                    foreach (var gm in GroupedMenus)
+                    if (_selectedMenuItemItem is not null)
                     {
-                        if (_currentGroupeIndex == gm.GroupIndex)
-                        {
-                            gm.MenuContent.SelectedMenuItem = _selectedMenuItemItem;
-                        }
+                        ClearSelectedNoGroupedMenuItem();
+                    }
+
+                    //foreach (var gm in GroupedMenus)
+                    //{
+                    //    if (_currentGroupeIndex == gm.GroupIndex)
+                    //    {
+                    //        if (gm.MenuContent.SelectedMenuItem != _selectedMenuItemItem)
+                    //        {
+                    //            gm.MenuContent.SelectedMenuItem = _selectedMenuItemItem;
+                    //        }
+                    //    }
+                    //}
+                }
+            }
+        }
+
+        private NoGroupedMenuItemViewModel _selectedNoGroupedMenuItem;
+        public NoGroupedMenuItemViewModel SelectedNoGroupedMenuItem
+        {
+            get => _selectedNoGroupedMenuItem;
+            set
+            {
+                if (SetProperty(ref _selectedNoGroupedMenuItem, value))
+                {
+                    if (_selectedNoGroupedMenuItem is not null)
+                    {
+                        ClearSelectedMenuItem();
                     }
                 }
             }
@@ -93,17 +120,37 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         }
         #endregion
 
+        #region Clear Selected NoGroupedMenuItem Method
+        internal void ClearSelectedNoGroupedMenuItem()
+        {
+            if (SelectedNoGroupedMenuItem is not null)
+            {
+                // var noGroupedMenu = NoGroupedMenus.FirstOrDefault(ngm => ngm.NoGroupedMenuItems.Any(mi => IsEqualsNameOrTitle(mi.MenuItem.Title, SelectedNoGroupedMenuItem.MenuItem.Title) || IsEqualsNameOrTitle(mi.MenuItem.Name, SelectedNoGroupedMenuItem.MenuItem.Name)));
+                var noGroupedMenu = NoGroupedMenus.FirstOrDefault(ngm => IsEqualsNoGroupedMenuViewModel(ngm, SelectedNoGroupedMenuItem));
+
+                if (noGroupedMenu is not null)
+                {
+                    SelectedNoGroupedMenuItem = null;
+
+                    noGroupedMenu.ClearSelectedNoGroupeMenuItem();
+                }
+            }
+        }
+        #endregion
+
         #region Reset/Clear Selected MenuItem Method
         internal void ClearSelectedMenuItem()
         {
-            if (_selectedMenuItemItem is not null)
+            if (SelectedMenuItem is not null)
             {
-                var groupedMenu = GroupedMenus.FirstOrDefault(gm => gm.MenuContent.MenuItems.Any(mi => IsEqualsNameOrTitle(mi.MenuItem.Title, _selectedMenuItemItem.MenuItem.Title) || IsEqualsNameOrTitle(mi.MenuItem.Name, _selectedMenuItemItem.MenuItem.Name)));
+                var groupedMenu = GroupedMenus.FirstOrDefault(gm => gm.MenuContent.MenuItems.Any(mi => IsEqualsNameOrTitle(mi.MenuItem.Title, SelectedMenuItem.MenuItem.Title) ||
+                                                                                                       IsEqualsNameOrTitle(mi.MenuItem.Name, SelectedMenuItem.MenuItem.Name)));
 
                 if (groupedMenu is not null)
                 {
-                    _selectedMenuItemItem = null;
-                    _previewSelectedMenuItem = null;
+                    //_selectedMenuItemItem = null;
+                    // _previewSelectedMenuItem = null;
+                    SelectedMenuItem = null;
 
                     groupedMenu.MenuContent.ClearSelectedMenuItem();
                     _currentGroupeIndex = -1;
@@ -164,16 +211,21 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         #region Register SelectedTabItem Empty Event
         private void RegisterOnSelectedTabItemEmptyEvent()
         {
-            _eventAggregator.GetEvent<OnSelectedTabItemEmptyEvent>().Subscribe(async (oatie) =>
+            _eventAggregator.GetEvent<Aksl.Tabs.OnSelectedTabItemEmptyEvent>().Subscribe(async (ostee) =>
             {
                 try
                 {
                     if (SelectedMenuItem is not null)
                     {
                         SelectedMenuItem.IsSelected = false;
+                        SelectedMenuItem = null;
                     }
 
-                    SelectedMenuItem = null;
+                    if (SelectedNoGroupedMenuItem is not null)
+                    {
+                        SelectedNoGroupedMenuItem.IsSelected = false;
+                        SelectedNoGroupedMenuItem = null;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -186,7 +238,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         #region Register Active TabItem Event
         private void RegisterActiveTabItemEvent()
         {
-            _eventAggregator.GetEvent<OnActiveTabItemEvent>().Subscribe(async (oatie) =>
+            _eventAggregator.GetEvent<Aksl.Tabs.OnActiveTabItemEvent>().Subscribe(async (oatie) =>
             {
                 var currentTabInfo = oatie.SelectedTabInfo;
 
@@ -194,33 +246,99 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                 {
                     SetSelectedMenuItem();
 
-                    #region Set Selected MenuItem Method
+                    #region Set Selected GroupedMenuItem Method
                     void SetSelectedMenuItem()
                     {
-                        var groupedMenu = (from gm in GroupedMenus
-                                           let mc = gm.MenuContent
-                                           from mi in mc.MenuItems
-                                           where mi.Name.Equals(currentTabInfo.Name, StringComparison.InvariantCultureIgnoreCase) || mi.Title.Equals(currentTabInfo.Title, StringComparison.InvariantCultureIgnoreCase)
-                                           select new { MenuContent = mc, MenuItemItemViewModel = mi }).FirstOrDefault();
+                        var matchGroupedMenu = (from gm in GroupedMenus
+                                                let mc = gm.MenuContent
+                                                from mi in mc.MenuItems
+                                                where mi.Name.Equals(currentTabInfo.Name, StringComparison.InvariantCultureIgnoreCase) || mi.Title.Equals(currentTabInfo.Title, StringComparison.InvariantCultureIgnoreCase)
+                                                select new { MenuContent = mc, MenuItemItem = mi }).FirstOrDefault();
 
-                        var selectedGroupedMenu = (from gm in GroupedMenus
-                                                   let mc = gm.MenuContent
-                                                   from mi in mc.MenuItems
-                                                   where mi.IsSelected
-                                                   select new { MenuContent = mc, MenuItemItemViewModel = mi }).FirstOrDefault();
-                        Debug.Assert(selectedGroupedMenu.MenuItemItemViewModel == SelectedMenuItem);
+                        var matchNoGroupedMenu = (from ngm in NoGroupedMenus
+                                                  let ngmis = ngm.NoGroupedMenuItems
+                                                  from ngmi in ngmis
+                                                  where ngmi.Name.Equals(currentTabInfo.Name, StringComparison.InvariantCultureIgnoreCase) || ngmi.Title.Equals(currentTabInfo.Title, StringComparison.InvariantCultureIgnoreCase)
+                                                  select ngmi).FirstOrDefault();
 
-                        if (groupedMenu is not null)
+                        SetSelectedGroupedMenuMenuItem();
+                        SetSelectedNoGroupedMenuMenuItem();
+
+                        void SetSelectedGroupedMenuMenuItem()
                         {
-                            if (groupedMenu.MenuItemItemViewModel != SelectedMenuItem)
+                            if (matchGroupedMenu is not null && matchNoGroupedMenu is null)
                             {
-                                if (selectedGroupedMenu is not null)
+                                if (matchGroupedMenu.MenuItemItem == SelectedMenuItem)
                                 {
-                                    selectedGroupedMenu.MenuContent.ClearSelectedMenuItem();
+                                    return;
                                 }
 
-                                _currentGroupeIndex = groupedMenu.MenuContent.GroupIndex;
-                                SelectedMenuItem = groupedMenu.MenuItemItemViewModel;
+                                if (SelectedMenuItem is not null)
+                                {
+                                    var selectedGroupedMenu = (from gm in GroupedMenus
+                                                               let mc = gm.MenuContent
+                                                               from mi in mc.MenuItems
+                                                               where mi.IsSelected
+                                                               select new { MenuContent = mc, MenuItemItem = mi }).FirstOrDefault();
+                                    Debug.Assert(selectedGroupedMenu.MenuItemItem == SelectedMenuItem);
+
+                                    if (matchGroupedMenu.MenuItemItem != SelectedMenuItem)
+                                    {
+                                        if (selectedGroupedMenu is not null)
+                                        {
+                                            selectedGroupedMenu.MenuContent.ClearSelectedMenuItem();
+                                        }
+                                        //ClearSelectedMenuItem();
+
+                                        _currentGroupeIndex = matchGroupedMenu.MenuContent.GroupIndex;
+                                        matchGroupedMenu.MenuItemItem.IsSelected = true;
+                                        //SelectedMenuItem = matchGroupedMenu.MenuItemItem;
+                                    }
+                                }
+                                else if (SelectedNoGroupedMenuItem is not null)
+                                {
+                                    // ClearSelectedNoGroupedMenuItem();
+                                    //var selectedNoGroupedMenu = (from ngm in NoGroupedMenus
+                                    //                             let ngmi = ngm.NoGroupedMenuItems
+                                    //                             from nmi in ngmi
+                                    //                             where nmi.IsSelected
+                                    //                             select ngm).FirstOrDefault();
+                                    //if (selectedNoGroupedMenu is not null)
+                                    //{
+                                    //    selectedNoGroupedMenu.ClearSelectedNoGroupeMenuItem();
+                                    //}
+
+                                    _currentGroupeIndex = matchGroupedMenu.MenuContent.GroupIndex;
+                                    matchGroupedMenu.MenuItemItem.IsSelected = true;
+                                    // SelectedMenuItem = matchGroupedMenu.MenuItemItem;
+                                    // ClearSelectedNoGroupedMenuItem();
+                                }
+                            }
+                        }
+
+                        void SetSelectedNoGroupedMenuMenuItem()
+                        {
+                            if (matchNoGroupedMenu is not null && matchGroupedMenu is null)
+                            {
+                                if (matchNoGroupedMenu == SelectedNoGroupedMenuItem)
+                                {
+                                    return;
+                                }
+
+                                if (SelectedNoGroupedMenuItem is not null)
+                                {
+                                    if (matchNoGroupedMenu != SelectedNoGroupedMenuItem)
+                                    {
+                                        //SelectedNoGroupedMenuItem.IsSelected = false;
+                                        matchNoGroupedMenu.IsSelected = true;
+                                        //SelectedNoGroupedMenuItem = matchNoGroupedMenu;
+                                    }
+                                }
+                                else if (SelectedMenuItem is not null)
+                                {
+                                    matchNoGroupedMenu.IsSelected = true;
+                                    SelectedNoGroupedMenuItem = matchNoGroupedMenu;
+                                }
                             }
                         }
                     }
@@ -243,55 +361,118 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 
             var subMenuItems = rootMenuItem.SubMenus;
             int index = 0;
+            int groupIndex = 0;
             foreach (var smi in subMenuItems)
             {
                 var leafMenuItems = await GetAllLeafMenuItems(smi);
 
-                GroupedMenuViewModel groupedMenuViewModel = new(_eventAggregator, index++, smi, leafMenuItems);
-                AddPropertyChanged();
-
-                GroupedMenus.Add(groupedMenuViewModel);
-
-                void AddPropertyChanged()
+                if (HasLeafMenu())
                 {
-                    groupedMenuViewModel.PropertyChanged += (sender, e) =>
+                    GroupedMenuViewModel groupedMenuViewModel = new(_eventAggregator, groupIndex++, smi, leafMenuItems);
+                    groupedMenuViewModel.CreateMenuContentViewModels();
+
+                    GroupedMenus.Add(groupedMenuViewModel);
+                    AllMenus.Add(groupedMenuViewModel);
+
+                    AddPropertyChanged();
+                    void AddPropertyChanged()
                     {
-                        if (sender is GroupedMenuViewModel gmvm)
+                        groupedMenuViewModel.PropertyChanged += (sender, e) =>
                         {
-                            if (e.PropertyName == nameof(GroupedMenuViewModel.IsLoading))
+                            if (sender is GroupedMenuViewModel gmvm)
                             {
-                                //最后一个
-                                if (gmvm.GroupIndex == GroupedMenus.Count() && !gmvm.IsLoading)
-                                {
-                                    IsLoading = false;
-                                }
-                            }
+                                //if (e.PropertyName == nameof(GroupedMenuViewModel.IsLoading))
+                                //{
+                                //    //最后一个
+                                //    if (gmvm.GroupIndex == GroupedMenus.Count()-1 && !gmvm.IsLoading)
+                                //    {
+                                //        IsLoading = false;
+                                //    }
+                                //}
 
-                            if (e.PropertyName == nameof(GroupedMenuViewModel.MenuContent))
-                            {
-                                if (_currentGroupeIndex == gmvm.GroupIndex)
+                                if (e.PropertyName == nameof(GroupedMenuViewModel.SelectedMenuItem))
                                 {
-                                    SelectedMenuItem = gmvm.MenuContent.SelectedMenuItem;
-                                }
-                                else
-                                {
-                                    foreach (var gm in GroupedMenus)
+                                    if (_currentGroupeIndex == gmvm.GroupIndex)
                                     {
-                                        if (_currentGroupeIndex == gm.GroupIndex)
+                                        //SelectedMenuItem = gmvm.MenuContent.SelectedMenuItem;
+                                        if ((gmvm.SelectedMenuItem is not null && gmvm.SelectedMenuItem.IsSelected) && SelectedMenuItem != gmvm.SelectedMenuItem)
                                         {
-                                            _previewSelectedMenuItem = gm.MenuContent.SelectedMenuItem;
-                                            gm.MenuContent.ClearSelectedMenuItem();
-
-                                            break;
+                                            SelectedMenuItem = gmvm.SelectedMenuItem;
                                         }
                                     }
+                                    else
+                                    {
+                                        foreach (var gm in GroupedMenus)
+                                        {
+                                            if (_currentGroupeIndex == gm.GroupIndex)
+                                            {
+                                                // _previewSelectedMenuItem = gm.MenuContent.SelectedMenuItem;
+                                                gm.MenuContent.ClearSelectedMenuItem();
 
-                                    _currentGroupeIndex = gmvm.GroupIndex;
-                                    _selectedMenuItemItem = gmvm.MenuContent.SelectedMenuItem;
+                                                break;
+                                            }
+                                        }
+
+                                        _currentGroupeIndex = gmvm.GroupIndex;
+                                        if ((gmvm.SelectedMenuItem is not null && gmvm.SelectedMenuItem.IsSelected) && SelectedMenuItem != gmvm.SelectedMenuItem)
+                                        {
+                                            SelectedMenuItem = gmvm.SelectedMenuItem;
+                                        }
+                                        //SelectedMenuItem = gmvm.MenuContent.SelectedMenuItem;
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
+                    }
+                }
+                else
+                {
+                    NoGroupedMenuViewModel noGroupedMenuViewModel = new(index++, smi);
+                    noGroupedMenuViewModel.CreateMenuItemViewModels();
+
+                    NoGroupedMenus.Add(noGroupedMenuViewModel);
+                    AllMenus.Add(noGroupedMenuViewModel);
+
+                    AddPropertyChanged();
+                    void AddPropertyChanged()
+                    {
+                        noGroupedMenuViewModel.PropertyChanged += (sender, e) =>
+                        {
+                            if (sender is NoGroupedMenuViewModel ngmvm)
+                            {
+                                //if (e.PropertyName == nameof(NoGroupedMenuViewModel.IsLoading))
+                                //{
+                                //    //最后一个
+                                //    if (ngmvm.Index == NoGroupedMenus.Count()-1 && !ngmvm.IsLoading)
+                                //    {
+                                //        IsLoading = false;
+                                //    }
+                                //}
+
+                                if (e.PropertyName == nameof(NoGroupedMenuViewModel.SelectedNoGroupedMenuItem))
+                                {
+                                    if (SelectedNoGroupedMenuItem is null &&
+                                       (ngmvm.SelectedNoGroupedMenuItem is not null && ngmvm.SelectedNoGroupedMenuItem.IsSelected && ngmvm.SelectedNoGroupedMenuItem != SelectedNoGroupedMenuItem))
+                                    {
+                                        SelectedNoGroupedMenuItem = ngmvm.SelectedNoGroupedMenuItem;
+                                    }
+
+                                    if (SelectedNoGroupedMenuItem is not null &&
+                                        (ngmvm.SelectedNoGroupedMenuItem is not null && ngmvm.SelectedNoGroupedMenuItem.IsSelected && ngmvm.SelectedNoGroupedMenuItem != SelectedNoGroupedMenuItem))
+                                    {
+                                        SelectedNoGroupedMenuItem.IsSelected = false;
+
+                                        SelectedNoGroupedMenuItem = ngmvm.SelectedNoGroupedMenuItem;
+                                    }
+                                }
+                            }
+                        };
+                    }
+                }
+
+                bool HasLeafMenu()
+                {
+                    return !AnyEqualsMenuItems(leafMenuItems, smi);
                 }
             }
 
@@ -302,6 +483,14 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                 foreach (var gm in GroupedMenus)
                 {
                     foreach (var mi in gm.MenuContent.MenuItems)
+                    {
+                        mi.WorkspaceViewEventName = this.WorkspaceViewEventName;
+                    }
+                }
+
+                foreach (var ngm in NoGroupedMenus)
+                {
+                    foreach (var mi in ngm.NoGroupedMenuItems)
                     {
                         mi.WorkspaceViewEventName = this.WorkspaceViewEventName;
                     }
@@ -362,6 +551,19 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         private bool AnyEqualsMenuItems(IEnumerable<MenuItem> menuItems, MenuItem menuItem)
         {
             var isEquals = menuItems.Any(mi => IsEqualsNameOrTitle(mi.Name, menuItem.Name) || IsEqualsNameOrTitle(mi.Title, menuItem.Title));
+
+            return isEquals;
+        }
+
+        private bool IsEqualsNoGroupedMenuViewModel(NoGroupedMenuViewModel noGroupedMenuViewModel, NoGroupedMenuItemViewModel moGroupedMenuItemViewModel)
+        {
+            if (noGroupedMenuViewModel.SelectedNoGroupedMenuItem is null || moGroupedMenuItemViewModel is null)
+            {
+                return false;
+            }
+
+            var isEquals = IsEqualsNameOrTitle(noGroupedMenuViewModel.SelectedNoGroupedMenuItem.Name, moGroupedMenuItemViewModel.Name) ||
+                           IsEqualsNameOrTitle(noGroupedMenuViewModel.SelectedNoGroupedMenuItem.Title, moGroupedMenuItemViewModel.Title);
 
             return isEquals;
         }

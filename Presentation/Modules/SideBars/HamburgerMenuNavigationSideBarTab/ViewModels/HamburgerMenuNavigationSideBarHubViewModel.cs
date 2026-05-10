@@ -15,12 +15,12 @@ using Prism.Unity;
 using Unity;
 
 using Aksl.Dialogs.Services;
+using Aksl.Tabs;
+using Aksl.Tabs.Views;
+using Aksl.Tabs.ViewModels;
 
 using Aksl.Infrastructure;
 using Aksl.Infrastructure.Events;
-using Aksl.Tabs.ViewModels;
-using Aksl.Tabs;
-using Aksl.Tabs.Views;
 
 namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 {
@@ -59,7 +59,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         #endregion
 
         #region Properties
-        public GroupedMenusViewModel NavigationSideBar { get; private set; }
+        public GroupedMenusViewModel GroupedMenu{ get; private set; }
         public TabViewModel TabViewModel { get; set; }
         public TabViewModel SubTtabViewModel { get; set; }
         private bool _isLoading;
@@ -110,9 +110,9 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             {
                 if (SetProperty<bool>(ref _isPaneOpen, value))
                 {
-                    if (NavigationSideBar is not null)
+                    if (GroupedMenu is not null)
                     {
-                        NavigationSideBar.IsPaneOpen = value;
+                        GroupedMenu.IsPaneOpen = value;
                     }
 
                     VisualState = GetVisualState();
@@ -399,12 +399,12 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
 
             try
             {
-                NavigationSideBar = new(_eventAggregator, _menuService);
+                GroupedMenu = new(_eventAggregator, _menuService);
                 AddPropertyChanged();
 
                 void AddPropertyChanged()
                 {
-                    NavigationSideBar.PropertyChanged += (sender, e) =>
+                    GroupedMenu.PropertyChanged += (sender, e) =>
                     {
                         if (sender is GroupedMenusViewModel gmvm)
                         {
@@ -416,9 +416,9 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
                     };
                 }
 
-                NavigationSideBar.WorkspaceViewEventName = _workspaceViewEventName;
-                await NavigationSideBar.CreateGroupedMenuViewModelsAsync();
-                RaisePropertyChanged(nameof(NavigationSideBar));
+                GroupedMenu.WorkspaceViewEventName = _workspaceViewEventName;
+                await GroupedMenu.CreateGroupedMenuViewModelsAsync();
+                RaisePropertyChanged(nameof(GroupedMenu));
             }
             catch (Exception ex)
             {
@@ -442,7 +442,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             {
                 if (parameters.Count == 0)
                 {
-                    CreateGroupedMenusViewModelAsync().GetAwaiter().GetResult();
+                    CreateGroupedMenusViewModelAsync().Await();
                 }
             }
         }

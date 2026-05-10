@@ -37,20 +37,21 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             get => _selectedMenuItem;
             set
             {
-                var previewSelectedMenuItem = _selectedMenuItem;
+                SetProperty(ref _selectedMenuItem, value);
+                //var previewSelectedMenuItem = _selectedMenuItem;
 
-                if (SetProperty(ref _selectedMenuItem, value))
-                {
-                    if (previewSelectedMenuItem is not null && previewSelectedMenuItem.IsSelected)
-                    {
-                        previewSelectedMenuItem.IsSelected = false;
-                    }
+                //if (SetProperty(ref _selectedMenuItem, value))
+                //{
+                //    if (previewSelectedMenuItem is not null && previewSelectedMenuItem.IsSelected)
+                //    {
+                //        previewSelectedMenuItem.IsSelected = false;
+                //    }
 
-                    if (_selectedMenuItem is not null && !_selectedMenuItem.IsSelected)
-                    {
-                        _selectedMenuItem.IsSelected = true;
-                    }
-                }
+                //    if (_selectedMenuItem is not null && !_selectedMenuItem.IsSelected)
+                //    {
+                //        _selectedMenuItem.IsSelected = true;
+                //    }
+                //}
             }
         }
 
@@ -83,7 +84,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
         {
             if (SelectedMenuItem is not null)
             {
-                SelectedMenuItem.IsSelected = false; 
+                //SelectedMenuItem.IsSelected = false; 
                 SelectedMenuItem = null;
             }
         }
@@ -107,7 +108,7 @@ namespace Aksl.Modules.HamburgerMenuNavigationSideBarTab.ViewModels
             foreach (var menuItem in _leafMenuItems)
             {
                 MenuItemViewModel menuItemViewModel = new(_eventAggregator, GroupIndex, index++, menuItem);
-               
+
                 MenuItems.Add(menuItemViewModel);
             }
 
