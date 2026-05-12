@@ -25,7 +25,7 @@
 			  ModuleName="RadarMapModule"
 			  ViewName="Aksl.Modules.RadarMap.Views.RadarHubView,Aksl.Modules.RadarMap" >
 	</MenuItem>
-	<MenuItem Id="0"
+	<MenuItem Id="3"
 			  Name="IndustryManager"
 			  Title="Industry"
 			  Level="1"
@@ -36,7 +36,7 @@
 			  IsNextNavigation="True"
 			  NavigationName="Industry">
 	</MenuItem>
-	<MenuItem Id="0"
+	<MenuItem Id="4"
 			  Name="OthersManager"
 			  Title="Others"
 			  Level="1"

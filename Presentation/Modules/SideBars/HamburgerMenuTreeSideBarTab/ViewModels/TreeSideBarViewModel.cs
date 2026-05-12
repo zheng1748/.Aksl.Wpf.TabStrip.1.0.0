@@ -113,7 +113,9 @@ namespace Aksl.Modules.HamburgerMenuTreeSideBarTab.ViewModels
 
             return findTreeSideBarItemViewModel;
         }
+        #endregion
 
+        #region Findt TreeSideBarItemViewModel Method
         private TreeSideBarItemViewModel FindtTreeSideBarItemViewModel(TabInformation tabInformation )
         {
             TreeSideBarItemViewModel findTreeSideBarItemViewModel = null;

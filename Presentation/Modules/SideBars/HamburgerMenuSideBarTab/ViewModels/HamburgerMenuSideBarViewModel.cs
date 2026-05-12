@@ -185,8 +185,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
             var subMenuItems = rootMenuItem.SubMenus;
             foreach (var smi in subMenuItems)
             {
-                List<MenuItem> travelMenuItems = new();
-                var allLeafHierarchicalMenuItemViewModels = await GetAllLeafHamburgerMenuSideBarItemViewModels(smi, travelMenuItems);
+                var allLeafHierarchicalMenuItemViewModels = await GetAllLeafsOfMenuItem(smi);
                 AllLeafHamburgerMenuSideBarItems.AddRange(allLeafHierarchicalMenuItemViewModels);
             }
 
@@ -207,10 +206,11 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
         }
         #endregion
 
-        #region Get All Leaf HamburgerMenuSideBarItemViewModels Method
-        internal async Task<IEnumerable<HamburgerMenuSideBarItemViewModel>> GetAllLeafHamburgerMenuSideBarItemViewModels(MenuItem menuItem, IList<MenuItem> travelMenuItems)
+        #region Get All Leafs Method
+        internal async Task<IEnumerable<HamburgerMenuSideBarItemViewModel>> GetAllLeafsOfMenuItem(MenuItem menuItem)
         {
-            List<HamburgerMenuSideBarItemViewModel> leafHamburgerMenuSideBarItemViewModels = new();
+            List<MenuItem> travelMenuItems = new();
+            List<HamburgerMenuSideBarItemViewModel> leafsOfMenuItem = new();
 
             await RecursiveSubMenuItem(menuItem);
 
@@ -220,7 +220,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
                 var isAddOnNotLeaf = !IsLeaf(currentMenuItem) && !IsNexOnNotLeaf(currentMenuItem);
                 if (!AnyEqualsMenuItems(travelMenuItems, currentMenuItem) && HasTitle(currentMenuItem) && (isAddOnLeaf || isAddOnNotLeaf))
                 {
-                    leafHamburgerMenuSideBarItemViewModels.Add(new(currentMenuItem,null));
+                    leafsOfMenuItem.Add(new(currentMenuItem,null));
                     travelMenuItems.Add(currentMenuItem);
                 }
 
@@ -250,16 +250,16 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
 
             bool IsNexOnNotLeaf(MenuItem mi) => (mi is not null) && mi.IsNexOnNotLeaf;
 
-            return leafHamburgerMenuSideBarItemViewModels;
+            return leafsOfMenuItem;
         }
         #endregion
 
         #region Contain Methods
         private bool AnyEqualsMenuItems(IEnumerable<MenuItem> menuItems, MenuItem menuItem)
         {
-            var isEquals = menuItems.Any(mi => IsEqualsNameOrTitle(mi.Name, menuItem.Name) || IsEqualsNameOrTitle(mi.Title, menuItem.Title));
+            var isAny = menuItems.Any(mi => IsEqualsNameOrTitle(mi.Name, menuItem.Name) || IsEqualsNameOrTitle(mi.Title, menuItem.Title));
 
-            return isEquals;
+            return isAny;
         }
 
         private bool IsEqualsNameOrTitle(string nameOrTitle, string otherNameOrTitle)
@@ -269,10 +269,10 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
                 return false;
             }
 
-            var isEquals = (!string.IsNullOrEmpty(nameOrTitle) && nameOrTitle.Equals(otherNameOrTitle, StringComparison.InvariantCultureIgnoreCase)) ||
+            var isAny = (!string.IsNullOrEmpty(nameOrTitle) && nameOrTitle.Equals(otherNameOrTitle, StringComparison.InvariantCultureIgnoreCase)) ||
                            (!string.IsNullOrEmpty(otherNameOrTitle) && otherNameOrTitle.Equals(nameOrTitle, StringComparison.InvariantCultureIgnoreCase));
 
-            return isEquals;
+            return isAny;
         }
         #endregion
     }
