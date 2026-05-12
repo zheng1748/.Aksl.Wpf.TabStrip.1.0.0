@@ -46,9 +46,6 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
         public ObservableCollection<HamburgerMenuSideBarItemViewModel> AllLeafHamburgerMenuSideBarItems { get; private set; }
         public string WorkspaceViewEventName { get; set; }
 
-        //private HamburgerMenuSideBarItemViewModel _previewSelectedHamburgerMenuItem;
-       // internal HamburgerMenuSideBarItemViewModel PreviewSelectedHamburgerMenuItem => _previewSelectedHamburgerMenuItem;
-
         internal HamburgerMenuSideBarItemViewModel _selectedHamburgerMenuSideBarItem;
         public HamburgerMenuSideBarItemViewModel SelectedHamburgerMenuSideBarItem
         {
@@ -56,22 +53,6 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
             set
             {
                 SetProperty(ref _selectedHamburgerMenuSideBarItem, value);
-                //_previewSelectedHamburgerMenuItem = _selectedHamburgerMenuSideBarItem;
-
-                //var previewSelectedHamburgerMenuItem = _selectedHamburgerMenuSideBarItem;
-
-                //if (SetProperty(ref _selectedHamburgerMenuSideBarItem, value))
-                //{
-                //    if (previewSelectedHamburgerMenuItem is not null && previewSelectedHamburgerMenuItem.IsSelected)
-                //    {
-                //        previewSelectedHamburgerMenuItem.IsSelected = false;
-                //    }
-
-                //    if (_selectedHamburgerMenuSideBarItem is not null && !_selectedHamburgerMenuSideBarItem.IsSelected)
-                //    {
-                //        _selectedHamburgerMenuSideBarItem.IsSelected = true;
-                //    }
-                //}
             }
         }
 
