@@ -16,13 +16,11 @@ using Prism.Unity;
 using Unity;
 
 using Aksl.Dialogs.Services;
+using Aksl.Tabs.ViewModels;
+using Aksl.Tabs.Views;
 
 using Aksl.Infrastructure;
 using Aksl.Infrastructure.Events;
-using Aksl.Tabs.ViewModels;
-using Aksl.Tabs.Views;
-using Aksl.Tabs;
-using Aksl.Toolkit.UI;
 
 namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
 {
@@ -232,7 +230,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
               
                 try
                 {
-                    TabInformation tabInformation = new()
+                    Tabs.TabInformation tabInformation = new()
                     {
                         Name = currentMenuItem.Name,
                         Title = currentMenuItem.Title,
@@ -269,8 +267,10 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
                                 SubTtabViewModel = new(); ;
                             }
 
-                            subTabView = new TabView();
-                            subTabView.DataContext = SubTtabViewModel;
+                            subTabView = new TabView
+                            {
+                                DataContext = SubTtabViewModel
+                            };
 
                             bool isSetFirst = false;
 
@@ -456,7 +456,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
 
             try
             {
-                HamburgerMenuSideBar = new(_eventAggregator, _menuService);
+                HamburgerMenuSideBar = new();
                 AddPropertyChanged();
 
                 void AddPropertyChanged()

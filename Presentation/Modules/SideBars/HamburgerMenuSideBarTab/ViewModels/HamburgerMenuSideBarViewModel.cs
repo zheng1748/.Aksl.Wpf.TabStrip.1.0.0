@@ -14,9 +14,9 @@ using Prism.Unity;
 using Unity;
 
 using Aksl.Dialogs.Services;
+using Aksl.Tabs;
 
 using Aksl.Infrastructure;
-using Aksl.Tabs;
 
 namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
 {
@@ -29,11 +29,11 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
          #endregion
 
         #region Constructors
-        public HamburgerMenuSideBarViewModel(IEventAggregator eventAggregator, IMenuService menuService)
+        public HamburgerMenuSideBarViewModel()
         {
-            _eventAggregator = eventAggregator;
+            _eventAggregator = (PrismApplication.Current as PrismApplicationBase).Container.Resolve<IEventAggregator>();
             _dialogViewService = (PrismApplication.Current as PrismApplicationBase).Container.Resolve<IDialogViewService>();
-            _menuService = menuService;
+            _menuService = (PrismApplication.Current as PrismApplicationBase).Container.Resolve<IMenuService>();
 
             AllLeafHamburgerMenuSideBarItems = new();
 
@@ -46,7 +46,7 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
         public ObservableCollection<HamburgerMenuSideBarItemViewModel> AllLeafHamburgerMenuSideBarItems { get; private set; }
         public string WorkspaceViewEventName { get; set; }
 
-        private HamburgerMenuSideBarItemViewModel _previewSelectedHamburgerMenuItem;
+        //private HamburgerMenuSideBarItemViewModel _previewSelectedHamburgerMenuItem;
        // internal HamburgerMenuSideBarItemViewModel PreviewSelectedHamburgerMenuItem => _previewSelectedHamburgerMenuItem;
 
         internal HamburgerMenuSideBarItemViewModel _selectedHamburgerMenuSideBarItem;
