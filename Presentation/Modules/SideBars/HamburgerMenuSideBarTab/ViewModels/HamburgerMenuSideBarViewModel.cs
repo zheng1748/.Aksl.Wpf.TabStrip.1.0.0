@@ -185,12 +185,12 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
             var subMenuItems = rootMenuItem.SubMenus;
             foreach (var smi in subMenuItems)
             {
-                var allLeafHierarchicalMenuItemViewModels = await GetAllLeafsOfMenuItem(smi);
+                var allLeafHierarchicalMenuItemViewModels = await GetLeafsOfMenuItem(smi);
                 AllLeafHamburgerMenuSideBarItems.AddRange(allLeafHierarchicalMenuItemViewModels);
             }
 
-            var allDistinctLeafHamburgerMenuSideBarItems = AllLeafHamburgerMenuSideBarItems.DistinctBy(item => (item.Name, item.Title));
-            AllLeafHamburgerMenuSideBarItems = new ObservableCollection<HamburgerMenuSideBarItemViewModel>(allDistinctLeafHamburgerMenuSideBarItems);
+            var allDistinctLeafs = AllLeafHamburgerMenuSideBarItems.DistinctBy(item => (item.Name, item.Title));
+            AllLeafHamburgerMenuSideBarItems = new ObservableCollection<HamburgerMenuSideBarItemViewModel>(allDistinctLeafs);
 
             SetWorkspaceViewEventName();
 
@@ -206,8 +206,8 @@ namespace Aksl.Modules.HamburgerMenuSideBarTab.ViewModels
         }
         #endregion
 
-        #region Get All Leafs Method
-        internal async Task<IEnumerable<HamburgerMenuSideBarItemViewModel>> GetAllLeafsOfMenuItem(MenuItem menuItem)
+        #region Get Leafs Method
+        internal async Task<IEnumerable<HamburgerMenuSideBarItemViewModel>> GetLeafsOfMenuItem(MenuItem menuItem)
         {
             List<MenuItem> travelMenuItems = new();
             List<HamburgerMenuSideBarItemViewModel> leafsOfMenuItem = new();
